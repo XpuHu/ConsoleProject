@@ -23,3 +23,31 @@
 
 'use strict';
 
+//создаём переменную для ответа пользователя
+// и записываем в неё ответ
+const numberOfFilms = +prompt('Сколько фильмов вы уже посмотрели?', '');    // добавляем унарный плюс, чтобы ответ был в числовом формате
+
+// создаём объект
+const personalMovieDB = {
+    count: numberOfFilms,
+    movies: {},
+    actors: {},
+    genres: [],
+    private: false
+};
+
+// задаём 2 вопроса ПО 2 РАЗА и записываем в переменные
+// ПОКА НЕ УМЕЕМ ОБРАБАТЫВАТЬ ДРОБНЫЕ ЧИСЛА
+const lastMovieA = prompt('Один из последних просмотренных фильмов?', ''),
+        lastMovieRatingA = +prompt('На сколько оцените его?', ''),
+        lastMovieB = prompt('Один из последних просмотренных фильмов?', ''),
+        lastMovieRatingB = +prompt('На сколько оцените его?', '');
+
+
+// записываем ответы в список фильмов в объекте
+personalMovieDB.movies[lastMovieA] = lastMovieRatingA;    // используем [] вместо . потому что с точкой может записаться не само значение на кириллице, а имя переменной
+personalMovieDB.movies[lastMovieB] = lastMovieRatingB;
+
+// Проверяем данные в консоли
+console.log('Сколько фильмов вы уже посмотрели? ', numberOfFilms);
+console.log('personalMovieDB ', personalMovieDB);
