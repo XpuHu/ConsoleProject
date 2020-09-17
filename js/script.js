@@ -1,20 +1,19 @@
 /* Задание на урок:
 
-1) Первую часть задания повторить по уроку
+1) У нас уже есть рабочее приложение, состоящее из отдельных функций. Представьте, что
+перед вами стоит задача переписать его так, чтобы все функции стали методами объекта personalMovieDB
+Такое случается в реальных продуктах при смене технологий или подхода к архитектуре программы
 
-2) Создать функцию showMyDB, которая будет проверять свойство privat. Если стоит в позиции
-false - выводит в консоль главный объект программы
+2) Создать метод toggleVisibleMyDB, который при вызове будет проверять свойство privat. Если оно false - он
+переключает его в true, если true - переключает в false. Протестировать вместе с showMyDB.
 
-3) Создать функцию writeYourGenres в которой пользователь будет 3 раза отвечать на вопрос 
-"Ваш любимый жанр под номером ${номер по порядку}". Каждый ответ записывается в массив данных
-genres
-
-P.S. Функции вызывать не обязательно*/
-
+3) В методе writeYourGenres запретить пользователю нажать кнопку "отмена" или оставлять пустую строку. 
+Если он это сделал - возвращать его к этому же вопросу. После того, как все жанры введены - 
+при помощи метода forEach вывести в консоль сообщения в таком виде:
+"Любимый жанр #(номер по порядку, начиная с 1) - это (название из массива)"*/
 
 "use strict";
 
-// Кооооороче...
 // Создаём функцию для проверки введённых значений, которая принимает вопрос
 const checkAnswer = (question) => {
     let isCountQuestion = false; // создаём булеву переменную, хранит тип вопроса: ждём число или текст
@@ -41,76 +40,59 @@ const checkAnswer = (question) => {
     return isCountQuestion ? +answer : answer;
 };
 
-// переносим определение уровня в отдельную функцию
-function detectPersonalLevel() {
-    // Проверяем количество фильмов у персоны
-    switch (true) {
-        case personalMovieDB.count < 10: // это значение должно быть равно или неравно true
-            alert("Просмотрено довольно мало фильмов");
-            break;
-        case personalMovieDB.count >= 10 && personalMovieDB.count < 30:
-            alert("Вы классический зритель");
-            break;
-        case personalMovieDB.count >= 30:
-            alert("Вы киноман");
-            break;
-        default:
-            alert("Произошла ошибка");
-            break;
-    }
-}
-
-// переносим вопросы в отдельную функцию
-function askAboutFilms() {
-    // задаём 2 вопроса ПО 2 РАЗА и записываем в переменные
-    // ПОКА НЕ УМЕЕМ ОБРАБАТЫВАТЬ ДРОБНЫЕ ЧИСЛА
-    // используем цикл для вопросов
-    for (let i = 0; i < 2; i++) {
-        const lastMovie = checkAnswer("Один из последних просмотренных фильмов?"),
-            lastMovieRating = checkAnswer("На сколько оцените его?");
-
-        // ПРОВЕРЕННЫЕ ответы сразу записываем в список фильмов
-        personalMovieDB.movies[lastMovie] = lastMovieRating;
-    }
-}
-
-// выводим базу, если она не приватная
-function showMyDB () {
-    if (personalMovieDB.private === false) {
-        console.log(personalMovieDB);
-    }
-}
-
-// спрашиваем про любимые жанры и записываем
-function writeYourGenres() {
-    // задаём 3 вопроса
-    for (let i = 1; i <= 3; i++) {
-        // задаём вопрос по порядку
-        // записываем проверенный ответ в базу
-        // так как это массив, то первый элемент всегда начинается с нуля
-        // и если не указать i-1, то запишется 4 элемента
-        // где первый будет с индексом 0 и пустым значением
-        personalMovieDB.genres[i - 1] = checkAnswer(`Ваш любимый жанр под номером ${i}?`);
-
-        // если бы genres был объектом, то было бы достаточно personalMovieDB.genres[i]
-    }
-}
-
-//создаём переменную для ответа пользователя
-// и записываем в неё ответ, который уже проверен
-const numberOfFilms = checkAnswer("Сколько фильмов вы уже посмотрели?");
-
-// создаём объект
 const personalMovieDB = {
-    count: numberOfFilms,
+    count: 0,
     movies: {},
     actors: {},
     genres: [],
     private: false,
+    start: function () {
+        this.count = checkAnswer("Сколько фильмов вы уже посмотрели?");
+    },
+    detectPersonalLevel: function () {
+        switch (true) {
+            case this.count < 10:
+                alert("Просмотрено довольно мало фильмов");
+                break;
+            case this.count >= 10 && this.count < 30:
+                alert("Вы классический зритель");
+                break;
+            case this.count >= 30:
+                alert("Вы киноман");
+                break;
+            default:
+                alert("Произошла ошибка");
+                break;
+        }
+    },
+    askAboutFilms: function () {
+        for (let i = 0; i < 2; i++) {
+            const lastMovie = checkAnswer("Один из последних просмотренных фильмов?"),
+                lastMovieRating = checkAnswer("На сколько оцените его?");
+
+            this.movies[lastMovie] = lastMovieRating;
+        }
+    },
+    writeYourGenres: function () {
+        let genres = checkAnswer(`Введите ваши любимые жанры через запятую:`);
+        this.genres = genres.split(",");
+        this.genres.forEach((genre, index) => {
+            console.log(`Любимый жанр #${index + 1} - это ${genre}`);
+        });
+    },
+    showMyDB: function () {
+        if (this.private === false) {
+            console.log(this);
+        }
+    },
+    toggleVisibleMyDB: function () {
+        this.private = !this.private;
+    }
 };
 
 // проводим опрос
-//detectPersonalLevel();
-//askAboutFilms();
-writeYourGenres();
-showMyDB();
+// personalMovieDB.start();
+// personalMovieDB.detectPersonalLevel();
+// personalMovieDB.askAboutFilms();
+personalMovieDB.writeYourGenres();
+personalMovieDB.showMyDB();
